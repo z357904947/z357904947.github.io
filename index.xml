@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>生命在于折腾</title>
-    <link>https://z357904947.github.io/</link>
+    <link>https://blog.zjh-free-space.life/</link>
     <description>Recent content on 生命在于折腾</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 15 Dec 2023 13:33:46 +0800</lastBuildDate>
-    <atom:link href="https://z357904947.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://blog.zjh-free-space.life/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用github Actions遇到的问题</title>
-      <link>https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <link>https://blog.zjh-free-space.life/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</link>
       <pubDate>Fri, 15 Dec 2023 13:33:46 +0800</pubDate>
-      <guid>https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <guid>https://blog.zjh-free-space.life/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
       <description>&lt;h2 id=&#34;简述&#34;&gt;简述&lt;/h2&gt;&#xA;&lt;p&gt;一直没有使用过github的ci工具，这次正好有个项目，本着多实践的心态，用github actions进行项目的自动化部署，当前主流趋势都是通过docker 进行部署，所以常用流水线都是构建项目后将镜像上传到仓库，部署服务器在更新镜像重新运行。&lt;/p&gt;&#xA;&lt;p&gt;但是我的服务器内存吃紧，我不想再部署一个docker额外占用内存了。所以就采用直接部署jar的方式，本来我以为很容易，因为整个流程就是编译然后把jar传到服务器然后再运行java -jar 启动起来。直到我使用了自托管的runner.&lt;/p&gt;</description>
     </item>
   </channel>

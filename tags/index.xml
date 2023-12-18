@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on 生命在于折腾</title>
-    <link>https://z357904947.github.io/tags/</link>
+    <link>https://blog.zjh-free-space.life/tags/</link>
     <description>Recent content in Tags on 生命在于折腾</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 15 Dec 2023 13:33:46 +0800</lastBuildDate>
-    <atom:link href="https://z357904947.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://blog.zjh-free-space.life/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>guthub actions</title>
-      <link>https://z357904947.github.io/tags/guthub-actions/</link>
+      <link>https://blog.zjh-free-space.life/tags/guthub-actions/</link>
       <pubDate>Fri, 15 Dec 2023 13:33:46 +0800</pubDate>
-      <guid>https://z357904947.github.io/tags/guthub-actions/</guid>
+      <guid>https://blog.zjh-free-space.life/tags/guthub-actions/</guid>
       <description></description>
     </item>
     <item>
       <title>runner</title>
-      <link>https://z357904947.github.io/tags/runner/</link>
+      <link>https://blog.zjh-free-space.life/tags/runner/</link>
       <pubDate>Fri, 15 Dec 2023 13:33:46 +0800</pubDate>
-      <guid>https://z357904947.github.io/tags/runner/</guid>
+      <guid>https://blog.zjh-free-space.life/tags/runner/</guid>
       <description></description>
     </item>
   </channel>
