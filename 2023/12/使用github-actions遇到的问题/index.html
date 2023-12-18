@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <script type="application/ld+json">
+
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用github Actions遇到的问题",
+  
+  "datePublished": "2023-12-15T13:33:46+08:00",
+  "dateModified": "2023-12-15T13:33:46+08:00",
+  "author": {
+    "@type": "Person",
+    "name": "斯拉达和斯拉克",
+    
+    "image": "https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/2730372-character-dota2-game-inkcontober-juggernaut-mask_112705.png"
+    
+  },
+  "mainEntityOfPage": { 
+    "@type": "WebPage",
+    "@id": "https:\/\/z357904947.github.io\/2023\/12\/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98\/" 
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "生命在于折腾",
+    
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/2730372-character-dota2-game-inkcontober-juggernaut-mask_112705.png"
+    }
+    
+  },
+  "description": "简述 一直没有使用过github的ci工具，这次正好有个项目，本着多实践的心态，用github actions进行项目的自动化部署，当前主流趋势都是通过docker 进行部署，所以常用流水线都是构建项目后将镜像上传到仓库，部署服务器在更新镜像重新运行。\n但是我的服务器内存吃紧，我不想再部署一个docker额外占用内存了。所以就采用直接部署jar的方式，本来我以为很容易，因为整个流程就是编译然后把jar传到服务器然后再运行java -jar 启动起来。直到我使用了自托管的runner.\n",
+  "keywords": []
+}
+
+</script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.121.1 with theme Tranquilpeak 0.5.3-BETA">
+<meta name="author" content="斯拉达和斯拉克">
+<meta name="keywords" content="">
+<meta name="description" content="简述
+一直没有使用过github的ci工具，这次正好有个项目，本着多实践的心态，用github actions进行项目的自动化部署，当前主流趋势都是通过docker 进行部署，所以常用流水线都是构建项目后将镜像上传到仓库，部署服务器在更新镜像重新运行。
+但是我的服务器内存吃紧，我不想再部署一个docker额外占用内存了。所以就采用直接部署jar的方式，本来我以为很容易，因为整个流程就是编译然后把jar传到服务器然后再运行java -jar 启动起来。直到我使用了自托管的runner.">
+
+
+<meta property="og:description" content="简述
+一直没有使用过github的ci工具，这次正好有个项目，本着多实践的心态，用github actions进行项目的自动化部署，当前主流趋势都是通过docker 进行部署，所以常用流水线都是构建项目后将镜像上传到仓库，部署服务器在更新镜像重新运行。
+但是我的服务器内存吃紧，我不想再部署一个docker额外占用内存了。所以就采用直接部署jar的方式，本来我以为很容易，因为整个流程就是编译然后把jar传到服务器然后再运行java -jar 启动起来。直到我使用了自托管的runner.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用github Actions遇到的问题">
+<meta name="twitter:title" content="使用github Actions遇到的问题">
+<meta property="og:url" content="https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+<meta property="twitter:url" content="https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+<meta property="og:site_name" content="生命在于折腾">
+<meta property="og:description" content="简述
+一直没有使用过github的ci工具，这次正好有个项目，本着多实践的心态，用github actions进行项目的自动化部署，当前主流趋势都是通过docker 进行部署，所以常用流水线都是构建项目后将镜像上传到仓库，部署服务器在更新镜像重新运行。
+但是我的服务器内存吃紧，我不想再部署一个docker额外占用内存了。所以就采用直接部署jar的方式，本来我以为很容易，因为整个流程就是编译然后把jar传到服务器然后再运行java -jar 启动起来。直到我使用了自托管的runner.">
+<meta name="twitter:description" content="简述
+一直没有使用过github的ci工具，这次正好有个项目，本着多实践的心态，用github actions进行项目的自动化部署，当前主流趋势都是通过docker 进行部署，所以常用流水线都是构建项目后将镜像上传到仓库，部署服务器在更新镜像重新运行。
+但是我的服务器内存吃紧，我不想再部署一个docker额外占用内存了。所以就采用直接部署jar的方式，本来我以为很容易，因为整个流程就是编译然后把jar传到服务器然后再运行java -jar 启动起来。直到我使用了自托管的runner.">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2023-12-15T13:33:46">
+  
+  
+    <meta property="article:modified_time" content="2023-12-15T13:33:46">
+  
+  
+  
+    
+      <meta property="article:section" content="问题记录">
+    
+      <meta property="article:section" content="运维">
+    
+  
+  
+    
+      <meta property="article:tag" content="guthub actions">
+    
+      <meta property="article:tag" content="runner">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/2730372-character-dota2-game-inkcontober-juggernaut-mask_112705.png">
+  <meta property="twitter:image" content="https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/2730372-character-dota2-game-inkcontober-juggernaut-mask_112705.png">
+
+
+
+
+
+
+    <title>使用github Actions遇到的问题</title>
+
+    <link rel="icon" href="https://z357904947.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
+    
+    <link rel="stylesheet" href="https://z357904947.github.io/css/style-h6ccsoet3mzkbb0wngshlfbaweimexgqcxj0h5hu4h82olsdzz6wmqdkajm.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="5">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://z357904947.github.io/" aria-label="去首页">生命在于折腾</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://z357904947.github.io/#about" aria-label="打开链接: /#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/2730372-character-dota2-game-inkcontober-juggernaut-mask_112705.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="5">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://z357904947.github.io/#about" aria-label="阅读有关作者的更多信息">
+          <img class="sidebar-profile-picture" src="https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/2730372-character-dota2-game-inkcontober-juggernaut-mask_112705.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">斯拉达和斯拉克</h4>
+        
+          <h5 class="sidebar-profile-bio">斯拉达和斯拉克是一对快乐的父子俩，他们俩经常一起打怪升级</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://z357904947.github.io/" title="Home">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://z357904947.github.io/categories" title="Categories">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://z357904947.github.io/tags" title="Tags">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://z357904947.github.io/archives" title="Archives">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://z357904947.github.io/#about" title="About">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/z357904947" target="_blank" rel="noopener" title="GitHub">
+    
+      <i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://z357904947.github.io/index.xml" title="RSS">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-rss" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="5"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" id="top">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title">
+      使用github Actions遇到的问题
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time datetime="2023-12-15T13:33:46&#43;08:00">
+        
+  十二月 15, 2023
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://z357904947.github.io/categories/%e9%97%ae%e9%a2%98%e8%ae%b0%e5%bd%95">问题记录</a>, 
+    
+      <a class="category-link" href="https://z357904947.github.io/categories/%e8%bf%90%e7%bb%b4">运维</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown">
+            <div class="main-content-wrap">
+              <h2 id="简述">简述</h2>
+<p>一直没有使用过github的ci工具，这次正好有个项目，本着多实践的心态，用github actions进行项目的自动化部署，当前主流趋势都是通过docker 进行部署，所以常用流水线都是构建项目后将镜像上传到仓库，部署服务器在更新镜像重新运行。</p>
+<p>但是我的服务器内存吃紧，我不想再部署一个docker额外占用内存了。所以就采用直接部署jar的方式，本来我以为很容易，因为整个流程就是编译然后把jar传到服务器然后再运行java -jar 启动起来。直到我使用了自托管的runner.</p>
+<h2 id="问题">问题</h2>
+<h3 id="服务进程关闭问题">服务进程关闭问题</h3>
+<p>查看了一下github提供的文档，新建了一个流水线使用了一下官方的runner,结果编译个项目都要十几分钟，实在是等不起，然后我就配置了一个自托管的runner，部署在我的一个depain 服务器上，流水线的配置如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">编译部署</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">on</span>: <span style="color:#ae81ff">workflow_dispatch</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">permissions</span>: <span style="color:#ae81ff">write-all</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">jobs</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">build</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">runs-on</span>: [<span style="color:#ae81ff">self-hosted,Linux]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">steps</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@v3</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">设置JDK 17环境</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-java@v3</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">with</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">java-version</span>: <span style="color:#e6db74">&#39;17&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">distribution</span>: <span style="color:#e6db74">&#39;temurin&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cache</span>: <span style="color:#ae81ff">maven</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">依赖缓存</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/cache@v3</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">with</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#ae81ff">~/.m2/repository</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">key</span>: <span style="color:#ae81ff">${{ runner.os }}-maven-${{ hashFiles(&#39;**/pom.xml&#39;) }}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">restore-keys</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          ${{ runner.os }}-maven-</span>          
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">maven编译</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: <span style="color:#ae81ff">mvn -B package  -Dmaven.test.skip=true  --file pom.xml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">deploy</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">needs</span>: <span style="color:#ae81ff">build</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">runs-on</span>: [<span style="color:#ae81ff">self-hosted,Linux]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">steps</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">创建部署目录</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: <span style="color:#ae81ff">mkdir -p /data/path/old/</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">停止旧项目</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: <span style="color:#ae81ff">/data/path/启动脚本.sh stop</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">清除旧包</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        cd /data/jieneng/old
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        find . -name &#34;ruoyi-admin_*.jar&#34; -mtime +2 -exec rm {} \;</span>        
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">拷贝部署脚本</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: <span style="color:#ae81ff">cp script/bin/启动脚本.sh /data/path/启动脚本.sh</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">存档旧jar包</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        cd /data/jieneng
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        find . -maxdepth 1 -name &#34;ruoyi-admin.jar&#34; -exec sh -c &#39;mv &#34;{}&#34; &#34;/data/jieneng/old/$(basename {} .jar)_$(date +%Y%m%d%H%M%S).jar&#34;&#39; \;</span>        
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">拷贝jar到部署目录</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        pwd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        cp ruoyi-admin/target/ruoyi-admin.jar /data/path/</span>        
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">启动项目</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        cd /data/path/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        ./启动脚本.sh start</span>        
+</span></span></code></pre></div><p>整个流水线主要步骤是利用官方提供的actions工具检出代码并且设置jdk环境进行编译，将编译后的jar移动到部署目录，然后运行一个启动命令脚本，进行项目启动。很常见的方式，但我在运行流水成功后先发我的项目并没有启动起来，项目的启动日志也没有输出，看起来好像项目从来没有运行过，但是确确实实输出了启动脚本运行成功的日志信息。为了排查问题，我增加了下面的命令</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./启动脚本.sh start
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## 增加一个执行启动脚本后睡眠40秒的命令</span>
+</span></span><span style="display:flex;"><span>sleep <span style="color:#ae81ff">40</span>
+</span></span></code></pre></div><p>再次运行发现项目启动日志有输出了，大概过了40秒，日志再次中断了，现在正常人都能猜出来，随着流水线的结束，我的启动脚本启动的后台运行程序程序也终止了。</p>
+<p>再看下流水线最后的日志截图：</p>
+<p><img src="https://github.com/z357904947/z357904947.github.io/blob/main/image/2023%E5%B9%B412%E6%9C%8815%E6%97%A51.png?raw=true" alt="运行截图"></p>
+<p>翻译过来就是：清理孤立进程，终止孤立进程一个java进程。我随后又输出了一下我的jar启动后的进程，发现正是被流水线complete job 这个步骤进行清理的进程</p>
+<p>why?</p>
+<p>搜索了，通过流水线直接去执行一个shell脚本本来就是一个很危险的事情，出于安全考虑，runner在运行完毕后会终止所有的孤立进程，来减少一部分安全问题，而如果你必须要这么用，在执行命令前需要加上 RUNNER_TRACKING_ID=&quot;&quot;</p>
+<p>就像下面这样，当然这是不建议的操作，但是我没有在官方文档上找到关于这个RUNNER_TRACKING_ID环境变量的说明，只是在issues中找到的回答</p>
+<p>RUNNER_TRACKING_ID=&quot;&quot; &amp;&amp;  ./启动脚本.sh start</p>
+<h3 id="windows-环境问题">windows 环境问题</h3>
+<p>在成功在服务上运行了流水线操作后，我觉得仍然是太慢了，我的服务器本身就不怎么样，还部署了不少东西，跑一次流水线需要3、4分钟，那既要使用自托管的runner我何不在我工作的windows机器，作为编译机器，拥有更强大的性能，编译好后使用scp将包传到服务器上，然后通过ssh去执行启动命令。写到这了，我突然想问下，是不是其他国家也像中国一样，家庭宽带没有公网IP，并且即使有，也很方便对外去提供服务？</p>
+<p>在自己的工作电脑上，既然我的电脑上有git,maven,jdk 环境，我决定不在使用github actions 提供的插件，用自己已有不是更迅速。但是当我这么做的时候，我发现runner在执行命令时似乎一直获取不到我的path环境变量，比如执行mvn时，会报没有java_home,而我输出了环境变量path的值发现是正常的，我在流水线执行的命令中使用了<code>whoami</code>输出了runner在执行时的用户身份：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>&gt; whoami
+</span></span><span style="display:flex;"><span>&gt; nt authority<span style="color:#ae81ff">\n</span>etwork service
+</span></span></code></pre></div><p>看到这个名字我联想到这应该是个服务的身份名，然后我找到我runner所在的服务。
+<img src="https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/20231218092905.png" alt="runner服务属性">
+当时此账户这一栏是空的，搜索相关信息，发现windows 服务是有一个用户身份的，如果这里你没有给，是使用不了你的本地环境环境的。解决的办法，要么勾选本地系统账户，要么填一个正常的使用过的用户。我测试了这两种方法，在勾选本地系统账户时，发现git拉取代码报权限方面的错误，猜测也是由于用户身份导致的ssh链接相关问题，我就直接使用第二种方式。经过测试一切正常，可以通过runner使用本机的所有软件环境。</p>
+<h3 id="参考链接">参考链接：</h3>
+<p><a href="https://docs.github.com/zh/actions/security-guides/security-hardening-for-github-actions">官网文档</a></p>
+              
+
+
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://z357904947.github.io/tags/guthub-actions/">guthub actions</a>
+
+  <a class="tag tag--primary tag--small" href="https://z357904947.github.io/tags/runner/">runner</a>
+
+                  </div>
+                
+              
+            
+            
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="分享这个帖子">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" title="分享到 Facebook" aria-label="分享到 Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" title="分享到 Twitter" aria-label="分享到 Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" title="分享到 Linkedin" aria-label="分享到 Linkedin">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+    <li class="post-action">
+      <a class="post-action-btn btn btn--default" href="#disqus_thread" aria-label="发表评论">
+        <i class="far fa-comment"></i>
+      </a>
+    </li>
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="回到顶部">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+            
+  
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+    <script type="text/javascript">
+      var disqus_config = function() {
+        this.page.url = 'https:\/\/z357904947.github.io\/2023\/12\/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98\/';
+        
+          this.page.identifier = '\/2023\/12\/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98\/'
+        
+      };
+      (function() {
+        
+        
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+          document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+          return;
+        }
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        var disqus_shortname = '斯拉达和斯拉克是一对快乐的父子俩';
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+  
+
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2023 斯拉达和斯拉克. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+        
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="分享这个帖子">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" title="分享到 Facebook" aria-label="分享到 Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" title="分享到 Twitter" aria-label="分享到 Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://z357904947.github.io/2023/12/%E4%BD%BF%E7%94%A8github-actions%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/" title="分享到 Linkedin" aria-label="分享到 Linkedin">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+    <li class="post-action">
+      <a class="post-action-btn btn btn--default" href="#disqus_thread" aria-label="发表评论">
+        <i class="far fa-comment"></i>
+      </a>
+    </li>
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="回到顶部">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+      </div>
+      
+<div id="share-options-bar" class="share-options-bar" data-behavior="5">
+  <i id="btn-close-shareoptions" class="fa fa-times"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fz357904947.github.io%2F2023%2F12%2F%25E4%25BD%25BF%25E7%2594%25A8github-actions%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%2F" aria-label="分享到 Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fz357904947.github.io%2F2023%2F12%2F%25E4%25BD%25BF%25E7%2594%25A8github-actions%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%2F" aria-label="分享到 Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fz357904947.github.io%2F2023%2F12%2F%25E4%25BD%25BF%25E7%2594%25A8github-actions%25E9%2581%2587%25E5%2588%25B0%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598%2F" aria-label="分享到 Linkedin">
+          <i class="fab fa-linkedin" aria-hidden="true"></i><span>分享到 Linkedin</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+
+
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-times"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://raw.githubusercontent.com/z357904947/z357904947.github.io/main/image/2730372-character-dota2-game-inkcontober-juggernaut-mask_112705.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">斯拉达和斯拉克</h4>
+    
+      <div id="about-card-bio">斯拉达和斯拉克是一对快乐的父子俩，他们俩经常一起打怪升级</div>
+    
+    
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://z357904947.github.io/images/wallpaperflare.com_wallpaper.jpg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://z357904947.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js"></script>
+
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js"></script>
+  
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+    
+  </body>
+</html>
+
